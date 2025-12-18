@@ -1,0 +1,78 @@
+create_concept
+│
+├── Concept_Corpus（概念语料库）
+│ ├── s0_get_preprint_metadata.ipynb: 从chemRxiv、medRxiv、bioRxiv获取预印本元数据（arXiv数据来自Kaggle）
+│ ├── s1_make_metadate_arxivstyle.ipynb: 对不同来源的元数据进行预处理
+│ ├── s2_combine_all_preprint_metadate.ipynb: 合并元数据
+│ ├── s3_get_concepts.ipynb: 使用NLP技术（例如RAKE）提取概念
+│ └── s4_improve_concept.ipynb: 对完整概念列表进行进一步优化
+│
+└── Domain_Concept（领域概念）
+├── s0_prepare_optics_quantum_data.ipynb: 获取特定领域论文（本文以光学和量子物理为例）
+├── s1_split_domain_papers.py: 为并行计算准备数据
+├── s2_get_domain_concepts.py: 获取完整概念列表中的领域特定顶点
+├── s3_merge_concepts.py: 对领域特定概念进行后处理
+├── s4_improve_concepts.ipynb: 进一步优化概念列表
+├── s5_improve_manually_concepts.py: 最终人工检查概念（语法、非概念短语、动词、序数词、连词、副词等）以提升质量
+└── full_domain_concepts.txt: 最终包含37,960个概念的列表（代表知识图谱的顶点）
+
+create_dynamic_edges（创建动态边）
+├── _get_openalex_workdata.py: 从OpenAlex获取元数据
+├── _get_openalex_workdata_parallel_run1.py: 从OpenAlex获取部分元数据（分多个部分运行）
+├── get_concept_pairs.py: 创建知识图谱的边（边包含时间和引用信息）
+├── merge_concept_pairs.py: 合并边文件
+└── process_edge_to_pandas_frame.py: 后处理，存储完整的动态知识图谱
+
+prepare other data
+├── prepare_unconnected_pair_solution.ipynb: 查找未连接的概念对（用于训练、测试和评估）
+├── prepare_adjacency_pagerank.py: 准备动态知识图谱并计算属性
+├── prepare_node_pair_citation_data_years.ipynb: 为特定年份的单个概念节点和概念对准备引用数据
+│
+├── create_dynamic_concepts（创建动态概念）
+│  ├── get_concept_citation.py: 从知识图谱创建动态概念（概念包含时间和引用信息）
+│  ├── merge_concept_citation.py: 合并动态概念文件
+│  └── process_concept_to_pandas_frame.py: 后处理，存储完整的动态概念
+│  ├── merge_concept_pairs.py: 合并动态概念
+│  └── process_edge_to_pandas_frame.py: 后处理，存储完整的动态概念
+│
+└── prepare_eval_data（准备评估数据）
+   ├── prepare_eval_feature_data.py: 准备知识图谱特征（用于评估数据集）
+   └── prepare_eval_feature_data_condition.py: 准备知识图谱特征（用于评估数据集，基于未来存在性的条件筛选）
+
+使用神经网络进行预测
+├── train_model_2019_run.py: 使用2016年->2019年数据训练神经网络（评估2019年->2022年）
+├── train_model_2019_condition.py: 使用2016年->2019年数据训练神经网络（评估2019年->2022年，基于未来存在性的条件筛选）
+├── train_model_2019_individual_feature.py: 使用2016年->2019年数据训练神经网络（基于个体特征评估2019年->2022年）
+└── train_model_2022_run.py: 使用2019年->2022年数据训练神经网络（用于2025年的真实未来预测）
+
+benchmark_code
+├── loops_fcNN.py: 全连接神经网络模型
+├── loops_transformer.py: Transformer模型
+├── loops_tree.py: 随机森林模型
+├── loops_xgboost.py: XGBoost模型
+└── 其他Python文件: 后处理，基于不同模型评估结果生成图6-8
+函数文件：
+
+features_utils.py
+general_utils.py
+preprocess_utils.py
+
+模型训练文件：
+
+loops_fcNN.py: 使用全连接神经网络（Fully Connected Neural Network）进行训练和评估。
+
+loops_transformer.py: 使用Transformer模型进行训练和评估。
+
+loops_tree.py: 使用随机森林（Random Forest）进行训练和评估。
+
+loops_xgboost.py: 使用XGBoost进行训练和评估。
+
+绘图文件：
+
+make_plot_loss_curve.py: 绘制损失曲线，并可以添加局部放大的插图。
+
+make_plots.py: 生成多个模型在不同训练和评估时间跨度、不同IR值下的ROC曲线对比图，以网格形式展示。
+
+make_plots_mixed.py: 专门针对fcNN模型的两种变体（IR=10和IR=50）进行对比绘图。
+
+make_plots_single.py: 固定训练周期（2014->2017）下，不同模型在不同评估周期和IR值下的对比图。
